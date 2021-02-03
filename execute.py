@@ -1,5 +1,5 @@
 """Execute generator."""
-from .data_schema import Message
+from data_generator.data_schema import Message
 
 def main():
     """Main."""
