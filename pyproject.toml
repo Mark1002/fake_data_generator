@@ -7,6 +7,7 @@ authors = ["Your Name <you@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 Faker = "^5.0.1"
+google-cloud-pubsub = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
