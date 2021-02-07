@@ -8,6 +8,8 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.8"
 Faker = "^5.0.1"
 google-cloud-pubsub = "^2.2.0"
+google-cloud-storage = "^1.35.1"
+google-resumable-media = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
