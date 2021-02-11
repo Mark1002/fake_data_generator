@@ -146,3 +146,5 @@ dmypy.json
 # custom
 .envrc
 keys/*
+.vscode
+.metals

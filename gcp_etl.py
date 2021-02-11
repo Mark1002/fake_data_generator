@@ -1,6 +1,7 @@
 """Show gcp data service etl processing."""
 import json
 import os
+import sys
 from google.cloud import pubsub_v1
 from google.cloud import storage
 from data_generator.data_schema import Message
@@ -8,13 +9,13 @@ from gcp.producer import GooglePubSubProducer
 from gcp.utils.gcs_stream_upload import GCSObjectStreamUpload
 
 
-def produce_fake_data_to_pubsub():
+def produce_fake_data_to_pubsub(message_num: int):
     """Fake data to pubsub."""
     producer = GooglePubSubProducer(
         project_id=os.getenv("PROJECT_ID"),
         topic_id="fake_data_topic"
     )
-    for _ in range(10):
+    for _ in range(message_num):
         message = Message().serialize()
         producer.produce(message)
 
@@ -54,8 +55,8 @@ def upload_fake_data_to_gcs(data: bytes):
 
 def main():
     """Main."""
-    produce_fake_data_to_pubsub()
-    consume_data_from_pubsub()
+    produce_fake_data_to_pubsub(int(sys.argv[1]))
+    # consume_data_from_pubsub()
 
 
 if __name__ == "__main__":
