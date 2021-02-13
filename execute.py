@@ -26,11 +26,18 @@ def consume_data_from_pubsub():
         client = storage.Client()
         md5_id = doc['md5_id']
         with GCSObjectStreamUpload(
-            client=client, bucket_name='mark-etl', blob_name=f'test-stream/{md5_id}'
+            client=client, bucket_name='mark-etl',
+            blob_name=f'test-stream/{md5_id}',
+            content_type='avro/binary',
         ) as f:
             f.write(data)
     
-    consumer = GooglePubSubConsumer(upload_fake_data_to_gcs)
+    consumer = GooglePubSubConsumer(
+        project_id=os.getenv('PROJECT_ID'),
+        topic_id='fake_data_topic',
+        subscription_id='fake_data_topic_sub',
+        func=upload_fake_data_to_gcs
+    )
     consumer.consume()
 
 def main():

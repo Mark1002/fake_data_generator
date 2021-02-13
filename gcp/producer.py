@@ -9,8 +9,7 @@ class GooglePubSubProducer:
         self.publisher = pubsub_v1.PublisherClient()
         self.topic_path = self.publisher.topic_path(project_id, topic_id)
     
-    def produce(self, message: str):
+    def produce(self, message: bytes):
         """Produce."""
-        data = message.encode("utf-8")
-        future = self.publisher.publish(self.topic_path, data)
+        future = self.publisher.publish(self.topic_path, message)
         print(future.result())

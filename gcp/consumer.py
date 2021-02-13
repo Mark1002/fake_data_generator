@@ -6,13 +6,32 @@ from google.cloud import pubsub_v1
 class GooglePubSubConsumer:
     """Pubsub consumer."""
 
-    def __init__(self, func: Callable) -> None:
+    def __init__(
+        self, project_id: str, topic_id: str,
+        subscription_id: str, func: Callable,
+    ) -> None:
         """Init."""
         self.subscriber = pubsub_v1.SubscriberClient()
+        self.topic_path = pubsub_v1.PublisherClient().topic_path(project_id, topic_id)
         self.subscription_path = self.subscriber.subscription_path(
-            os.getenv("PROJECT_ID"), "fake_data_topic-sub"
+            project_id, subscription_id
         )
+        self.project_path = f"projects/{project_id}"
         self.func = func
+        self._create_subscription()
+    
+    def _create_subscription(self):
+        subscriptions = [subscription.name for subscription in self.subscriber.list_subscriptions(
+            request={"project": self.project_path}
+        )]
+        if self.subscription_path in subscriptions:
+            print(f'{self.subscription_path} is exist!')
+            return
+        subscription = self.subscriber.create_subscription(
+            request={"name": self.subscription_path, "topic": self.topic_path}
+        )
+        print(f"Subscription created: {subscription}")
+
 
     def consume(self):
         """Consume data from pubsub."""
