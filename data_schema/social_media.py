@@ -1,6 +1,8 @@
-"""Data generator."""
+"""Fake crawler data schema."""
+import fastavro
 import datetime
 import json
+import io
 import random
 from dataclasses import dataclass, field, asdict
 from faker import Faker
@@ -33,16 +35,49 @@ class Message:
     uid: str = field(default_factory=faker.user_name)
     view_count: int = field(default_factory=lambda: random.randint(0, 999))
 
+    schema = fastavro.parse_schema({
+        "type": "record",
+        "name": "social_media",
+        "namespace": "fakedata.generator",
+        "fields": [
+            {"name": "article_layer", "type": "int"},
+            {"name": "author", "type": "string"},
+            {"name": "author_id", "type": "string"},
+            {"name": "category", "type": "string"},
+            {"name": "comment_count", "type": ["int", "null"]},
+            {"name": "content", "type": "string"},
+            {"name": "created_time", "type": "long"},
+            {"name": "dislike_count", "type": ["int", "null"]},
+            {"name": "doc_id", "type": "string"},
+            {"name": "fetched_time", "type": "long"},
+            {"name": "image_url", "type": "string"},
+            {"name": "like_count", "type": ["int", "null"]},
+            {"name": "link", "type": "string"},
+            {"name": "md5_id", "type": "string"},
+            {"name": "share_count", "type": ["int", "null"]},
+            {"name": "source", "type": "string"},
+            {"name": "tag", "type": "string"},
+            {"name": "title", "type": "string"},
+            {"name": "uid", "type": "string"},
+            {"name": "view_count", "type": ["int", "null"]},
+        ]
+    })
+
     def to_dict(self):
         """Convert to dict."""
         return asdict(self)
 
-    def serialize(self):
-        """Serialize data."""
-        return json.dumps(
-            self.to_dict(), default=lambda x: x.isoformat() if isinstance(x, datetime.datetime) else None # noqa
-        )
+    def serialize(self) -> bytes:
+        """Serialize data to avro."""
+        data = self.to_dict()
+        data['created_time'] = data['created_time'].timestamp()
+        data['fetched_time'] = data['fetched_time'].timestamp()
+        out = io.BytesIO()
+        fastavro.writer(out, Message.schema, [data])
+        return out.getvalue()
 
-    def deserialize(json_data):
+    def deserialize(self, avro: bytes) -> dict:
         """Deserialize data."""
-        pass
+        fo = io.BytesIO(avro)
+        data = list(fastavro.reader(fo))[0]
+        return data

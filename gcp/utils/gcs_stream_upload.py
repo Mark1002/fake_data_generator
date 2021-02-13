@@ -7,7 +7,8 @@ class GCSObjectStreamUpload:
     """GCSObjectStreamUpload."""
     def __init__(
         self, client: storage.Client, bucket_name: str,
-        blob_name: str, chunk_size: int=256 * 1024
+        blob_name: str, content_type: str,
+        chunk_size: int=256 * 1024
     ):
         self._client = client
         self._bucket = self._client.bucket(bucket_name)
@@ -17,6 +18,7 @@ class GCSObjectStreamUpload:
         self._buffer_size = 0
         self._chunk_size = chunk_size
         self._read = 0
+        self._content_type = content_type
 
         self._transport = AuthorizedSession(
             credentials=self._client._credentials
@@ -41,7 +43,7 @@ class GCSObjectStreamUpload:
         )
         self._request.initiate(
             transport=self._transport,
-            content_type='application/json',
+            content_type=self._content_type, # 'avro/binary'
             stream=self,
             stream_final=False,
             metadata={'name': self._blob.name},
