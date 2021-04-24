@@ -1,7 +1,6 @@
 """Fake crawler data schema."""
 import fastavro
 import datetime
-import json
 import io
 import random
 from dataclasses import dataclass, field, asdict
