@@ -1,5 +1,4 @@
 """Execute fake data generator."""
-import json
 import os
 import sys
 from google.cloud import storage
@@ -19,6 +18,7 @@ def produce_fake_data_to_pubsub(message_num: int):
         message = Message().serialize()
         producer.produce(message)
 
+
 def consume_data_from_pubsub():
     """Consume data from pubsub."""
     def upload_fake_data_to_gcs(data: bytes):
@@ -31,7 +31,7 @@ def consume_data_from_pubsub():
             content_type='avro/binary',
         ) as f:
             f.write(data)
-    
+
     consumer = GooglePubSubConsumer(
         project_id=os.getenv('PROJECT_ID'),
         topic_id='fake_data_topic',
@@ -39,6 +39,7 @@ def consume_data_from_pubsub():
         func=upload_fake_data_to_gcs
     )
     consumer.consume()
+
 
 def main():
     """Main."""
