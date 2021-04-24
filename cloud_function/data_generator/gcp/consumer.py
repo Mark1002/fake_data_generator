@@ -1,7 +1,7 @@
 """Consumer message."""
-import os
-from typing import Callable 
+from typing import Callable
 from google.cloud import pubsub_v1
+
 
 class GooglePubSubConsumer:
     """Pubsub consumer."""
@@ -12,16 +12,16 @@ class GooglePubSubConsumer:
     ) -> None:
         """Init."""
         self.subscriber = pubsub_v1.SubscriberClient()
-        self.topic_path = pubsub_v1.PublisherClient().topic_path(project_id, topic_id)
+        self.topic_path = pubsub_v1.PublisherClient().topic_path(project_id, topic_id) # noqa
         self.subscription_path = self.subscriber.subscription_path(
             project_id, subscription_id
         )
         self.project_path = f"projects/{project_id}"
         self.func = func
         self._create_subscription()
-    
+
     def _create_subscription(self):
-        subscriptions = [subscription.name for subscription in self.subscriber.list_subscriptions(
+        subscriptions = [subscription.name for subscription in self.subscriber.list_subscriptions( # noqa
             request={"project": self.project_path}
         )]
         if self.subscription_path in subscriptions:
@@ -32,13 +32,12 @@ class GooglePubSubConsumer:
         )
         print(f"Subscription created: {subscription}")
 
-
     def consume(self):
         """Consume data from pubsub."""
         pull_future = self.subscriber.subscribe(
             self.subscription_path, callback=self._callback)
         print(f"Listening for messages on {self.subscription_path}..\n")
-        # Wrap subscriber in a 'with' block to automatically call close() when done.
+        # Wrap subscriber in a 'with' block to automatically call close() when done. # noqa
         with self.subscriber:
             try:
                 # When `timeout` is not set, result() will block indefinitely,

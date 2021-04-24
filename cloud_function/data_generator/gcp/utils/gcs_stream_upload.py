@@ -3,12 +3,13 @@ from google.auth.transport.requests import AuthorizedSession
 from google.resumable_media import requests, common
 from google.cloud import storage
 
+
 class GCSObjectStreamUpload:
     """GCSObjectStreamUpload."""
     def __init__(
         self, client: storage.Client, bucket_name: str,
         blob_name: str, content_type: str,
-        chunk_size: int=256 * 1024
+        chunk_size: int = 256 * 1024
     ):
         self._client = client
         self._bucket = self._client.bucket(bucket_name)
@@ -43,7 +44,7 @@ class GCSObjectStreamUpload:
         )
         self._request.initiate(
             transport=self._transport,
-            content_type=self._content_type, # 'avro/binary'
+            content_type=self._content_type,  # 'avro/binary'
             stream=self,
             stream_final=False,
             metadata={'name': self._blob.name},
@@ -76,4 +77,3 @@ class GCSObjectStreamUpload:
 
     def tell(self) -> int:
         return self._read
-
