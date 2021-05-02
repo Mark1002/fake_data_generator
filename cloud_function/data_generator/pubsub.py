@@ -1,5 +1,6 @@
 """PubSub relate."""
 import os
+import json
 from google.cloud import storage
 from data_schema.social_media import Message
 from gcp.producer import GooglePubSubProducer
@@ -14,7 +15,8 @@ def produce_fake_data_to_pubsub(message_num: int = 100):
         topic_id="fake_data_topic"
     )
     for _ in range(message_num):
-        message = Message().serialize()
+        # message = Message().serialize()
+        message = json.dumps(Message().to_dict(), default=str).encode('utf-8')
         producer.produce(message)
 
 
@@ -38,3 +40,7 @@ def consume_data_from_pubsub():
         func=upload_fake_data_to_gcs
     )
     consumer.consume()
+
+
+if __name__ == "__main__":
+    produce_fake_data_to_pubsub()
